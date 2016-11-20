@@ -1,7 +1,10 @@
 const React = require("react");
 const Ps = require("perfect-scrollbar");
 
-const {cartItems,products} = require("../data");
+const CartStore = require("../stores/CartStore");
+const {getCartItem,removeCartItem} = CartStore;
+
+const {products} = require("../data");
 const QuantityControl = require("./QuantityControl");
 
 let Cart = React.createClass({
@@ -14,6 +17,8 @@ let Cart = React.createClass({
 
   renderCartItems() {
     // let cartItems = ...;
+    let cartItems=getCartItem();
+
     return Object.keys(cartItems).map(key => {
       let item = cartItems[key];
       return <CartItem key={key} item={item}/>
@@ -36,15 +41,21 @@ let Cart = React.createClass({
 });
 
 let CartItem = React.createClass({
+  handleTrashClick:function (productId,event) {
+    removeCartItem(productId);
+  },
+
   render: function() {
     let {item} = this.props;
     let {id,quantity} = this.props.item;
     let {price,imagePath,name} = products[id];
 
-    let priceDisplay = `$${price}`
+    let priceDisplay = `$${price}`;
     if(quantity >= 2) {
       priceDisplay = `${priceDisplay} x ${quantity}`
     }
+
+
 
     return (
 
@@ -62,11 +73,11 @@ let CartItem = React.createClass({
               {priceDisplay}
             </div>
           </div>
-          <img className="cart-item__trash" src="img/trash-icon.svg" />
+          <img className="cart-item__trash" src="img/trash-icon.svg" onClick={this.handleTrashClick.bind(this,id)} />
         </div> {/* cart-item__top-part */}
 
         <div className="cart-item__qty">
-          <QuantityControl item={item}/>
+          <QuantityControl item={item} id={id} />
         </div>
 
 

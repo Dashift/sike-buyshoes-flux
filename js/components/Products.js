@@ -2,22 +2,32 @@ const React = require("react");
 const QuantityControl = require("./QuantityControl");
 const {cartItems,products} = require("../data");
 
+const CartStore = require("../stores/CartStore");
+const {addCartItem,getCartItem} = CartStore;
+
 let Product = React.createClass({
+  handleClick :function (id,event){
+    addCartItem(id);
+  },
+
+  componentDidMount() {
+    CartStore.addChangeListener(this.forceUpdate.bind(this));
+  },
+
   render() {
+    let cartItems=getCartItem();
     let {id,name,price,imagePath} = this.props.product;
     let item = cartItems[id];
-
     let productControl;
     if(item != null) {
       let {quantity} = item;
       productControl = (
-        <QuantityControl item={item} variant="gray"/>
+        <QuantityControl item={item} id={id} variant="gray"/>
       );
-
     } else {
       productControl = (
-        <a className="product__add">
-          <img className="product__add__icon" src="img/cart-icon.svg" />
+        <a className="product__add" onClick={this.handleClick.bind(this,id)} ref="myRef">
+          <img className="product__add__icon" src="img/cart-icon.svg"  />
         </a>
       );
     }

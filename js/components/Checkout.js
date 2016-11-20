@@ -1,14 +1,24 @@
 const React = require("react");
 
-const {cartItems,products} = require("../data");
+const {products} = require("../data");
+
+const CartStore=require("../stores/CartStore");
+const {getCartItem}=CartStore;
+
 
 let Checkout = React.createClass({
+    componentDidMount(){
+        CartStore.addChangeListener(this.forceUpdate.bind(this));
+    },
+
   render() {
     let subtotal = 0;
+    let cartItems=getCartItem();
     Object.keys(cartItems).forEach(key => {
       let {quantity} = cartItems[key];
       let {price} = products[key];
       subtotal += price * quantity;
+        subtotal=subtotal.toFixed(2);
     });
 
     return (
